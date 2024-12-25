@@ -6,14 +6,19 @@
     </form>
   
     <ul>
-      <li *ngFor="let todo of todos">
-        <input
-          type="checkbox"
-          [checked]="todo.completed"
-          (change)="updateTodo(todo)"
-        />
-        <span [class.completed]="todo.completed">{{ todo.task }}</span>
-        <button (click)="deleteTodo(todo.id)">Delete</button>
-      </li>
+      @for (todo of todos; track todo.id) {
+        <li>
+          <input
+            type="checkbox"
+            [checked]="todo.completed"
+            (change)="updateTodo(todo)"
+          />
+          <span [class.completed]="todo.completed">{{ todo.task }}</span>
+          <button (click)="deleteTodo(todo.id)">Delete</button>
+        </li>        
+      }
+      @empty {
+        <p>Aucune tâche à faire</p>
+      }
     </ul>
   </div>
