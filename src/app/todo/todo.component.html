@@ -6,7 +6,7 @@
     </form>
   
     <ul>
-      @for (todo of todos; track todo._id) {
+      @for (todo of todos$ | async; track todo._id) {
         <li>
           <input
             type="checkbox"
