@@ -1,20 +1,20 @@
 <div class="container">
     <h1>To-Do List</h1>
     <form [formGroup]="todoForm" (ngSubmit)="addTodo()">
-      <input formControlName="task" placeholder="New Task" />
+      <input type="text" formControlName="task" placeholder="New Task" />
       <button type="submit">Add</button>
     </form>
   
     <ul>
-      @for (todo of todos; track todo.id) {
+      @for (todo of todos; track todo._id) {
         <li>
           <input
             type="checkbox"
             [checked]="todo.completed"
             (change)="updateTodo(todo)"
           />
-          <span [class.completed]="todo.completed">{{ todo.task }}</span>
-          <button (click)="deleteTodo(todo.id)">Delete</button>
+          <span [class.completed]="todo.completed">{{ todo.title }}</span>
+          <button (click)="deleteTodo(todo._id)">Delete</button>
         </li>        
       }
       @empty {

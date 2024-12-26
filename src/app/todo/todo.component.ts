@@ -1,50 +1,49 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { CommonModule } from '@angular/common'; // Import des directives Angular de base
-import { TodoService } from '../todo.service';
+import { TodoService } from '../core/todo.service';
+import { Todo } from '../core/todo.interface';
+import { AsyncPipe } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-todo',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule], // Importez ReactiveFormsModule ici
+  imports: [AsyncPipe, ReactiveFormsModule],
   templateUrl: './todo.component.html',
   styleUrls: ['./todo.component.css'],
 })
-
 export class TodoComponent implements OnInit {
-  todoForm: FormGroup;
-  todos: any[] = [];
+  todos$: Observable<Todo[]>;
 
-  constructor(private fb: FormBuilder, private todoService: TodoService) {
-    this.todoForm = this.fb.group({
-      task: [''],
-    });
-  }
+  private readonly todoService = inject(TodoService);
+  private readonly fb = inject(FormBuilder);
+
+  todoForm = this.fb.group({
+    task: [''],
+  });
 
   ngOnInit(): void {
     this.loadTodos();
   }
 
-  loadTodos() {
-    this.todoService.getTodos().subscribe((data) => {
-      this.todos = data;
-    });
+  loadTodos(): void {
+    this.todos$ = this.todoService.getTodos();
   }
 
-  addTodo() {
-    const newTodo = { task: this.todoForm.value.task, completed: false };
+  addTodo(): void {
+    const newTodo: Todo = { _id: '', title: this.todoForm.value.task, completed: false };
     this.todoService.createTodo(newTodo).subscribe(() => {
       this.todoForm.reset();
       this.loadTodos();
     });
   }
 
-  updateTodo(todo: any) {
+  updateTodo(todo: Todo): void {
     const updatedTodo = { ...todo, completed: !todo.completed };
     this.todoService.updateTodo(updatedTodo).subscribe(() => this.loadTodos());
   }
 
-  deleteTodo(id: string) {
+  deleteTodo(id: string): void {
     this.todoService.deleteTodo(id).subscribe(() => this.loadTodos());
   }
 }
